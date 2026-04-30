@@ -542,6 +542,8 @@
 <footer>Quiz EAF · Première STMG2 (lycée Val de Seine, M. Tronc) · Mise à jour 2025-2026</footer>
 
 <script>
+  // 1. Collez votre URL ici
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzDOl7ndayx1vpRF96NXF5D6fkK8GjANW75tWV0L_JXbtOndTvANS2ws5qSoeAOdOk/exec";
 // ══════════════════════════════════════════════════════════════
 //  ⚙️  CONFIGURATION — À MODIFIER AVANT DE METTRE EN LIGNE
 // ══════════════════════════════════════════════════════════════
@@ -930,28 +932,22 @@ function buildResultsText() {
 }
 
 function sendEmail() {
-  const body = buildResultsText();
-  const subject = `Quiz EAF – ${studentName}${studentClass ? " (" + studentClass + ")" : ""} – ${score}/${QUESTIONS.length}`;
-  const mailto = `mailto:${PROF_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.location.href = mailto;
-}
+  const payload = {
+    name: studentName,
+    className: studentClass,
+    score: score + "/" + QUESTIONS.length,
+    percentage: Math.round((score / QUESTIONS.length) * 100),
+    details: buildResultsText()
+  };
 
-function copyResults() {
-  const txt = buildResultsText();
-  navigator.clipboard.writeText(txt).then(() => {
-    alert("Résultats copiés dans le presse-papiers !");
-  }).catch(() => {
-    // fallback
-    const ta = document.createElement("textarea");
-    ta.value = txt;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand("copy");
-    document.body.removeChild(ta);
-    alert("Résultats copiés !");
-  });
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    mode: "no-cors", 
+    body: JSON.stringify(payload)
+  })
+  .then(() => alert("Résultats enregistrés !"))
+  .catch(err => console.error(err));
 }
-
 function restartQuiz() {
   current = 0; score = 0; answered = [];
   document.getElementById("screen-results").style.display = "none";

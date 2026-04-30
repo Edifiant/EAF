@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Quiz EAF – Première STMG2 – Lycée Val de Seine</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Source+Serif+4:ital,opsz,wght@0,8..60,300;0,8..60,400;1,8..60,300&display=swap" rel="stylesheet"/>
+<style>
+  /* ── CONFIG COULEURS ── */
+  :root {
+    --navy: #0f1c2e;
+    --navy-mid: #1a2f4a;
+    --gold: #c9a84c;
+    --gold-light: #e8cb7d;
+    --cream: #f5f0e8;
+    --cream-dark: #ece4d4;
+    --text: #1e1a14;
+    --muted: #6b5f4e;
+    --correct: #2d6a4f;
+    --correct-bg: #d8f3dc;
+    --wrong: #9b2226;
+    --wrong-bg: #fde8e9;
+    --radius: 12px;
+    --shadow: 0 4px 32px rgba(15,28,46,0.14);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    min-height: 100vh;
+    font-family: 'Source Serif 4', Georgia, serif;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 16px 60px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    width: 100%;
+    max-width: 760px;
+    text-align: center;
+    padding: 48px 0 32px;
+  }
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--navy);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    padding: 5px 16px;
+    border-radius: 40px;
+    margin-bottom: 18px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(1.9rem, 5vw, 2.9rem);
+    color: var(--cream);
+    line-height: 1.15;
+    margin-bottom: 10px;
+  }
+  header h1 em {
+    color: var(--gold);
+    font-style: italic;
+  }
+  header p {
+    color: #8fa0b8;
+    font-size: .95rem;
+    font-weight: 300;
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--gold);
+    margin: 22px auto;
+    border: none;
+  }
+
+  /* ── CARTE PRINCIPALE ── */
+  .card {
+    background: var(--cream);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 760px;
+    padding: 40px 44px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 5px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--gold), var(--navy-mid));
+  }
+
+  /* ── ÉCRAN D'ACCUEIL ── */
+  #screen-intro { text-align: center; }
+  #screen-intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+  #screen-intro p {
+    color: var(--muted);
+    font-size: .95rem;
+    line-height: 1.65;
+    margin-bottom: 28px;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin: 24px 0 32px;
+    text-align: left;
+  }
+  .info-item {
+    background: var(--navy);
+    border-radius: 8px;
+    padding: 14px 16px;
+    color: var(--cream);
+  }
+  .info-item .label {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .info-item .value {
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+  }
+  label.field-label {
+    display: block;
+    font-size: .85rem;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    color: var(--navy-mid);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--cream-dark);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    background: #fff;
+    transition: border-color .2s;
+    outline: none;
+    margin-bottom: 16px;
+  }
+  input[type="text"]:focus, input[type="email"]:focus {
+    border-color: var(--gold);
+  }
+
+  /* ── BOUTONS ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--navy);
+    color: var(--cream);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: 'Source Serif 4', serif;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+  }
+  .btn:hover { background: var(--navy-mid); transform: translateY(-1px); }
+  .btn-gold {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+  }
+  .btn-gold:hover { background: var(--gold-light); }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--navy);
+    color: var(--navy);
+  }
+  .btn-outline:hover { background: var(--cream-dark); }
+
+  /* ── BARRE DE PROGRESSION ── */
+  .progress-bar-wrap {
+    margin-bottom: 28px;
+  }
+  .progress-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: .8rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 6px;
+    background: var(--cream-dark);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), #e8a020);
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+
+  /* ── QUESTION ── */
+  .question-number {
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .question-theme {
+    display: inline-block;
+    background: var(--navy);
+    color: var(--gold-light);
+    font-size: .7rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .question-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--navy);
+    margin-bottom: 24px;
+  }
+
+  /* ── CHOIX ── */
+  .choices { display: flex; flex-direction: column; gap: 10px; }
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border: 2px solid var(--cream-dark);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color .18s, background .18s;
+    background: #fff;
+    font-size: .97rem;
+    line-height: 1.45;
+    user-select: none;
+  }
+  .choice:hover:not(.disabled) {
+    border-color: var(--gold);
+    background: #fffaf2;
+  }
+  .choice.selected { border-color: var(--navy); background: var(--navy); color: var(--cream); }
+  .choice.correct  { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .choice.wrong    { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+  .choice.show-correct { border-color: var(--correct); background: var(--correct-bg); color: var(--correct); }
+  .choice.disabled { cursor: default; }
+  .choice-letter {
+    min-width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--cream-dark);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    font-size: .82rem;
+    color: var(--navy);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: background .18s, color .18s;
+  }
+  .choice.selected .choice-letter { background: var(--gold); color: var(--navy); }
+  .choice.correct  .choice-letter, .choice.show-correct .choice-letter { background: var(--correct); color: #fff; }
+  .choice.wrong    .choice-letter { background: var(--wrong); color: #fff; }
+
+  /* ── FEEDBACK ── */
+  .feedback-box {
+    margin-top: 18px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    font-size: .92rem;
+    line-height: 1.55;
+    display: none;
+  }
+  .feedback-box.show { display: block; }
+  .feedback-box.correct { background: var(--correct-bg); color: var(--correct); border-left: 4px solid var(--correct); }
+  .feedback-box.wrong   { background: var(--wrong-bg);   color: var(--wrong);   border-left: 4px solid var(--wrong); }
+  .feedback-icon { font-size: 1.1rem; margin-right: 6px; }
+
+  /* ── NAVIGATION ── */
+  .nav-bar {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 24px;
+  }
+
+  /* ── RÉSULTATS ── */
+  #screen-results { display: none; }
+  .score-circle {
+    width: 130px; height: 130px;
+    border-radius: 50%;
+    border: 6px solid var(--gold);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    margin: 0 auto 24px;
+  }
+  .score-number {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.4rem;
+    color: var(--navy);
+    line-height: 1;
+  }
+  .score-label {
+    font-size: .75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .1em;
+  }
+  .result-mention {
+    text-align: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    color: var(--navy-mid);
+    margin-bottom: 6px;
+  }
+  .result-sub {
+    text-align: center;
+    font-size: .9rem;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+
+  /* Thematic stats */
+  .theme-stats { margin: 28px 0; }
+  .theme-stats h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--navy);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--cream-dark);
+  }
+  .theme-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: .88rem;
+  }
+  .theme-name { width: 180px; flex-shrink: 0; color: var(--navy-mid); }
+  .theme-track {
+    flex: 1;
+    height: 8px;
+    background: var(--cream-dark);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .theme-fill {
+    height: 100%;
+    border-radius: 99px;
+    background: linear-gradient(90deg, var(--gold), #e8a020);
+    transition: width .6s ease;
+  }
+  .theme-pct { font-size: .8rem; color: var(--muted); min-width: 36px; text-align: right; }
+
+  /* Review list */
+  .review-list { margin: 24px 0; }
+  .review-list h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--navy);
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--cream-dark);
+  }
+  .review-item {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    font-size: .88rem;
+    line-height: 1.5;
+    border-left: 4px solid transparent;
+  }
+  .review-item.ok  { background: var(--correct-bg); border-color: var(--correct); }
+  .review-item.ko  { background: var(--wrong-bg);   border-color: var(--wrong); }
+  .review-item .ri-q  { font-weight: 600; color: var(--navy); margin-bottom: 2px; }
+  .review-item .ri-a  { color: var(--muted); }
+  .review-item .ri-correct { color: var(--correct); font-weight: 600; }
+  .review-item .ri-wrong   { color: var(--wrong); }
+
+  /* Envoi */
+  .send-section {
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-top: 28px;
+  }
+  .send-section h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cream);
+    margin-bottom: 6px;
+  }
+  .send-section p { color: #8fa0b8; font-size: .88rem; margin-bottom: 16px; }
+  .send-section input[type="email"] {
+    background: #fff;
+    margin-bottom: 0;
+  }
+  .send-buttons { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    color: #3d5068;
+    font-size: .78rem;
+    padding-top: 32px;
+  }
+
+  @media (max-width: 560px) {
+    .card { padding: 28px 22px; }
+    .theme-name { width: 130px; font-size: .8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="badge">Lycée Val de Seine · Première STMG2</div>
+<div class="badge">M. Tronc</div>
+  <h1>Quiz <em>Épreuve Anticipée</em><br>de Français</h1>
+  <hr class="divider"/>
+  <p>Testez vos connaissances sur le format, les notions et les œuvres de l'EAF avant de plonger dans les révisions.</p>
+</header>
+
+<!-- ══════════════ ÉCRAN INTRO ══════════════ -->
+<div class="card" id="screen-intro">
+  <h2>Bienvenue !</h2>
+  <p>Ce questionnaire vous permettra d'évaluer ce que vous savez déjà sur l'Épreuve Anticipée de Français. Il n'y a pas de piège — répondez honnêtement, c'est votre point de départ.</p>
+
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="label">Questions</div>
+      <div class="value">20 QCM</div>
+    </div>
+    <div class="info-item">
+      <div class="label">Durée estimée</div>
+      <div class="value">~10 minutes</div>
+    </div>
+    <div class="info-item">
+      <div class="label">Résultats</div>
+      <div class="value">Instantanés</div>
+    </div>
+    <div class="info-item">
+      <div class="label">Envoi</div>
+      <div class="value">Par e-mail</div>
+    </div>
+  </div>
+
+  <label class="field-label" for="student-name">Votre prénom et nom</label>
+  <input type="text" id="student-name" placeholder="ex. : Marie Dupont" autocomplete="name"/>
+<label class="field-label" for="student-class">Votre classe</label>
+  <input type="text" id="student-class" placeholder="ex. : 1re STMG 2"/>
+  
+
+  <div style="text-align:center;margin-top:8px;">
+    <button class="btn btn-gold" onclick="startQuiz()">Commencer le quiz →</button>
+  </div>
+</div>
+
+<!-- ══════════════ ÉCRAN QUIZ ══════════════ -->
+<div class="card" id="screen-quiz" style="display:none;">
+  <div class="progress-bar-wrap">
+    <div class="progress-meta">
+      <span id="prog-label">Question 1 / 20</span>
+      <span id="prog-score">0 bonne(s) réponse(s)</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:5%"></div></div>
+  </div>
+
+  <div class="question-number" id="q-num">Question 1</div>
+  <div class="question-theme" id="q-theme">Format de l'épreuve</div>
+  <div class="question-text" id="q-text"></div>
+
+  <div class="choices" id="choices-container"></div>
+
+  <div class="feedback-box" id="feedback-box">
+    <span class="feedback-icon"></span><span id="feedback-text"></span>
+  </div>
+
+  <div class="nav-bar">
+    <button class="btn btn-gold" id="btn-next" style="display:none;" onclick="nextQuestion()">Suivant →</button>
+  </div>
+</div>
+
+<!-- ══════════════ ÉCRAN RÉSULTATS ══════════════ -->
+<div class="card" id="screen-results">
+  <div class="score-circle">
+    <div class="score-number" id="res-score">0/20</div>
+    <div class="score-label">Score</div>
+  </div>
+  <div class="result-mention" id="res-mention"></div>
+  <div class="result-sub" id="res-sub"></div>
+
+  <div class="theme-stats">
+    <h3>📊 Résultats par domaine</h3>
+    <div id="theme-bars"></div>
+  </div>
+
+  <div class="review-list">
+    <h3>📋 Détail des réponses</h3>
+    <div id="review-container"></div>
+  </div>
+
+  <div class="send-section">
+    <h3>📬 Envoyer vos résultats au professeur</h3>
+    <p>Cliquez sur le bouton ci-dessous pour ouvrir votre messagerie avec un e-mail pré-rempli contenant tous vos résultats.</p>
+    <button class="btn btn-gold" onclick="sendEmail()">✉ Envoyer par e-mail</button>
+    <button class="btn btn-outline" style="color:var(--cream);border-color:var(--cream);margin-top:8px;" onclick="copyResults()">⧉ Copier les résultats</button>
+  </div>
+
+  <div style="text-align:center;margin-top:28px;">
+    <button class="btn btn-outline" onclick="restartQuiz()">↺ Recommencer le quiz</button>
+  </div>
+</div>
+
+<footer>Quiz EAF · Première STMG2 (lycée Val de Seine, M. Tronc) · Mise à jour 2025-2026</footer>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+//  ⚙️  CONFIGURATION — À MODIFIER AVANT DE METTRE EN LIGNE
+// ══════════════════════════════════════════════════════════════
+const PROF_EMAIL = "grandnimportequoi76@gmail.com"; // ← Remplacez par votre adresse e-mail
+// ══════════════════════════════════════════════════════════════
+
+const QUESTIONS = [
+  // ── THÈME : Format de l'épreuve ──
+  {
+    theme: "Format de l'épreuve",
+    text: "Quand se déroule l'Épreuve Anticipée de Français (EAF) ?",
+    choices: ["En janvier, en cours d'année de première", "En juin, en fin de première", "En septembre, avant la terminale", "En mai, avec les autres épreuves du bac"],
+    correct: 1,
+    explanation: "L'EAF se déroule en juin, à la fin de l'année de première. C'est pourquoi on parle d'épreuve « anticipée » : elle précède les autres épreuves du baccalauréat, passées en terminale."
+  },
+  {
+    theme: "Format de l'épreuve",
+    text: "Combien de temps dure l'épreuve écrite de l'EAF pour les séries technologiques (STMG) ?",
+    choices: ["2 heures", "3 heures", "4 heures", "5 heures"],
+    correct: 2,
+    explanation: "L'épreuve écrite dure 4 heures, qu'il s'agisse des séries générales ou technologiques."
+  },
+  {
+    theme: "Format de l'épreuve",
+    text: "Quelle est la durée totale de l'épreuve orale de l'EAF (préparation + passage) ?",
+    choices: ["20 minutes au total", "30 minutes au total", "50 minutes au total", "1 heure au total"],
+    correct: 2,
+    explanation: "L'oral comprend 30 minutes de préparation puis 20 minutes de passage devant l'examinateur, soit 50 minutes au total."
+  },
+  {
+    theme: "Format de l'épreuve",
+    text: "Quel est le coefficient de l'épreuve écrite de l'EAF au baccalauréat ?",
+    choices: ["Coefficient 2", "Coefficient 3", "Coefficient 5", "Coefficient 8"],
+    correct: 2,
+    explanation: "L'épreuve écrite de l'EAF est affectée d'un coefficient 5. L'oral est évalué selon le même coefficient."
+  },
+  {
+    theme: "Format de l'épreuve",
+    text: "Que peut choisir un·e élève de série technologique à l'épreuve écrite de l'EAF ?",
+    choices: ["Une dissertation ou un commentaire composé", "Une contraction de texte + un essai, ou un commentaire", "Un résumé ou une synthèse de documents", "Un commentaire ou une question de grammaire"],
+    correct: 1,
+    explanation: "Pour les séries technologiques (dont STMG), l'épreuve écrite propose : soit une contraction de texte suivie d'un essai, soit un commentaire. L'élève choisit l'un des deux sujets."
+  },
+
+  // ── THÈME : L'épreuve orale ──
+  {
+    theme: "L'épreuve orale",
+    text: "Qu'est-ce qu'une lecture linéaire ?",
+    choices: [
+      "La lecture silencieuse d'un texte dans l'ordre chronologique",
+      "Une lecture à voix haute expressive d'un texte",
+      "Une analyse méthodique d'un texte qui suit l'ordre du passage",
+      "Un résumé des grandes parties d'un texte"
+    ],
+    correct: 2,
+    explanation: "La lecture linéaire est une analyse qui suit l'ordre du texte, passage par passage. Elle montre comment le sens se construit et évolue au fil du texte, contrairement au commentaire composé qui est organisé en axes thématiques."
+  },
+  {
+    theme: "L'épreuve orale",
+    text: "Lors de l'épreuve orale, combien de temps dure la présentation de la lecture linéaire ?",
+    choices: ["5 minutes", "10 minutes", "15 minutes", "20 minutes"],
+    correct: 1,
+    explanation: "Le candidat présente sa lecture linéaire pendant environ 10 minutes, répond à la question de grammaire les deux minutes suivantes, puis présente une œuvre qu'il a retenue et répond aux questions de l'examinateur."
+  },
+  {
+    theme: "L'épreuve orale",
+    text: "Parmi ces propositions, laquelle est un objectif de la lecture linéaire à l'oral ?",
+    choices: [
+      "Montrer que l'on a mémorisé le texte",
+      "Dégager des axes thématiques indépendants du texte",
+      "Révéler les effets et les enjeux du texte en suivant son déroulement",
+      "Traduire le texte dans un langage contemporain"
+    ],
+    correct: 2,
+    explanation: "La lecture linéaire vise à analyser les effets produits par le texte en le suivant dans l'ordre, en montrant comment chaque élément contribue au sens et aux enjeux de l'extrait."
+  },
+  {
+    theme: "L'épreuve orale",
+    text: "Les textes présentés à l'oral font partie d'un « parcours associé ». Que désigne cette expression ?",
+    choices: [
+      "Un groupement de textes complémentaires pour enrichir la lecture de l'œuvre",
+      "Le résumé officiel de l'œuvre rédigé par le ministère",
+      "Un manuel scolaire obligatoire",
+      "Une liste de thèmes imposés pour la dissertation"
+    ],
+    correct: 0,
+    explanation: "Le parcours associé est un ensemble de textes et de documents qui éclairent la lecture de l'œuvre intégrale étudiée sous un angle particulier (ex. : « Individu et société »). Ces textes constituent le corpus du programme."
+  },
+
+  // ── THÈME : Notions littéraires ──
+  {
+    theme: "Notions littéraires",
+    text: "Qu'est-ce qu'une figure de style ?",
+    choices: [
+      "Un type de personnage récurrent dans la littérature",
+      "Un procédé d'écriture qui produit un effet particulier sur le lecteur",
+      "La structure narrative d'un roman",
+      "Un terme réservé à la poésie"
+    ],
+    correct: 1,
+    explanation: "Une figure de style est un procédé rhétorique (choix de mots, construction de phrases) qui produit un effet particulier — expressif, esthétique, argumentatif. On en trouve dans tous les genres littéraires."
+  },
+  {
+    theme: "Notions littéraires",
+    text: "La métaphore est une figure de style. Laquelle de ces phrases en contient une ?",
+    choices: [
+      "Il courait vite comme le vent.",
+      "Sa voix était une musique douce.",
+      "Il n'avait pas dormi de la nuit.",
+      "Elle portait une robe rouge."
+    ],
+    correct: 1,
+    explanation: "« Sa voix était une musique douce » est une métaphore : on assimile la voix à une musique sans outil de comparaison. La phrase avec « comme » est une comparaison, pas une métaphore."
+  },
+  {
+    theme: "Notions littéraires",
+    text: "Qu'est-ce qu'une hyperbole ?",
+    choices: [
+      "Une figure qui atténue la réalité pour ne pas choquer",
+      "Une figure qui consiste à répéter le même mot",
+      "Une figure qui exagère pour produire un effet frappant",
+      "Une figure qui oppose deux réalités contraires"
+    ],
+    correct: 2,
+    explanation: "L'hyperbole est une exagération expressive (ex. : « Je t'ai dit mille fois… »). À l'opposé, la litote atténue la réalité. L'antithèse oppose deux idées contraires."
+  },
+  {
+    theme: "Notions littéraires",
+    text: "Qu'appelle-t-on le « registre » d'un texte ?",
+    choices: [
+      "Le niveau de langue (familier, courant, soutenu)",
+      "L'effet dominant produit sur le lecteur (lyrique, épique, comique, tragique…)",
+      "Le nombre de personnages dans une œuvre",
+      "La longueur des phrases dans un texte"
+    ],
+    correct: 1,
+    explanation: "Le registre (ou tonalité) désigne l'effet émotionnel dominant d'un texte : lyrique, tragique, comique, ironique, épique, fantastique… Il ne faut pas le confondre avec le niveau de langue."
+  },
+  {
+    theme: "Notions littéraires",
+    text: "Qu'est-ce que l'ironie dans un texte littéraire ?",
+    choices: [
+      "Dire le contraire de ce que l'on pense, pour critiquer ou se moquer",
+      "Raconter plusieurs histoires en même temps",
+      "Utiliser un vocabulaire très soutenu et précieux",
+      "Décrire des personnages de façon très détaillée"
+    ],
+    correct: 0,
+    explanation: "L'ironie consiste à exprimer le contraire de ce que l'on pense, avec une intention critique ou humoristique. Elle demande au lecteur de comprendre le décalage entre les mots et le sens véritable."
+  },
+
+  // ── THÈME : Genres et formes ──
+  {
+    theme: "Genres et formes",
+    text: "Combien d'œuvres intégrales au programme l'élève doit-il avoir étudiées pour l'EAF ?",
+    choices: ["1 œuvre", "2 œuvres", "3 œuvres", "4 œuvres"],
+    correct: 3,
+    explanation: "Le programme prévoit 4 œuvres intégrales, une par objet d'étude : une œuvre poétique, une œuvre narrative (roman ou récit), une œuvre de théâtre et une autour de la littérature d'idées."
+  },
+  {
+    theme: "Genres et formes",
+    text: "Quels sont les grands genres littéraires abordés dans les objets d'étude de l'EAF ?",
+    choices: [
+      "Poésie, roman/récit, théâtre, littérature d'idées",
+      "Fable, conte, essai, biographie",
+      "Science-fiction, policier, fantastique, autobiographie",
+      "Épopée, tragédie, comédie, nouvelle"
+    ],
+    correct: 0,
+    explanation: "Les quatre objets d'étude du programme de première sont : la poésie du XIXe au XXIe siècle, le roman et le récit, le théâtre du XVIIe au XXIe siècle, et la littérature d'idées du XVIe au XVIIIe siècle."
+  },
+  {
+    theme: "Genres et formes",
+    text: "Le commentaire littéraire consiste à :",
+    choices: [
+      "Raconter l'histoire du texte dans ses propres mots",
+      "Analyser les effets d'un texte en développant des axes thématiques organisés",
+      "Comparer deux textes de la même époque",
+      "Retrouver la biographie de l'auteur à partir du texte"
+    ],
+    correct: 1,
+    explanation: "Le commentaire littéraire propose une analyse organisée du texte en deux ou trois axes thématiques (parfois appelés « parties »). Il ne raconte pas le texte mais en étudie les effets littéraires."
+  },
+  {
+    theme: "Genres et formes",
+    text: "La contraction de texte (ou résumé) demandée en série technologique doit respecter :",
+    choices: [
+      "Le point de vue personnel du rédacteur",
+      "Le sens et la progression du texte original, de façon fidèle et concise",
+      "L'utilisation des mêmes figures de style que l'auteur",
+      "Un plan en trois parties imposé par le correcteur"
+    ],
+    correct: 1,
+    explanation: "La contraction exige de restituer fidèlement les idées et la progression du texte, de façon condensée (environ 1/4 du texte), sans y ajouter ses propres opinions ni modifier le sens."
+  },
+
+  // ── THÈME : Culture générale EAF ──
+  {
+    theme: "Culture générale EAF",
+    text: "Pourquoi l'EAF est-elle qualifiée d'épreuve « anticipée » ?",
+    choices: [
+      "Parce qu'elle peut être passée dès la seconde",
+      "Parce qu'elle est facultative et peut être avancée",
+      "Parce qu'elle se passe en première, avant les autres épreuves du bac en terminale",
+      "Parce que les résultats sont communiqués avant la fin de l'année"
+    ],
+    correct: 2,
+    explanation: "Elle est dite « anticipée » car elle fait partie du baccalauréat mais se déroule en fin de première, une année avant les épreuves terminales. Elle anticipe ainsi la certification finale."
+  },
+  {
+    theme: "Culture générale EAF",
+    text: "Que se passe-t-il si un·e élève obtient une note supérieure à 10/20 à l'EAF écrite ?",
+    choices: [
+      "Il/elle est dispensé·e de l'oral",
+      "Les points au-dessus de 10 sont conservés pour le bac",
+      "Il/elle ne peut pas repasser l'épreuve en terminale",
+      "Il/elle perd les points excédentaires au profit d'une autre matière"
+    ],
+    correct: 1,
+    explanation: "Pour l'épreuve écrite, les points supérieurs à la moyenne (au-dessus de 10) comptent dans le calcul du bac. Les points en dessous de 10 sont pris en compte négativement pour le score final du baccalauréat."
+  }
+];
+
+// ── ÉTAT ──
+let current = 0;
+let score = 0;
+let answered = [];
+let studentName = "";
+let studentClass = "";
+
+function startQuiz() {
+  studentName = document.getElementById("student-name").value.trim();
+  studentClass = document.getElementById("student-class").value.trim();
+  if (!studentName) {
+    alert("Merci d'indiquer votre prénom et nom avant de commencer.");
+    return;
+  }
+  document.getElementById("screen-intro").style.display = "none";
+  document.getElementById("screen-quiz").style.display = "block";
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = QUESTIONS[current];
+  document.getElementById("q-num").textContent = `Question ${current + 1}`;
+  document.getElementById("q-theme").textContent = q.theme;
+  document.getElementById("q-text").textContent = q.text;
+  document.getElementById("prog-label").textContent = `Question ${current + 1} / ${QUESTIONS.length}`;
+  document.getElementById("prog-score").textContent = `${score} bonne(s) réponse(s)`;
+  document.getElementById("prog-fill").style.width = `${((current) / QUESTIONS.length) * 100}%`;
+  document.getElementById("btn-next").style.display = "none";
+
+  const fb = document.getElementById("feedback-box");
+  fb.className = "feedback-box";
+  fb.style.display = "none";
+
+  const container = document.getElementById("choices-container");
+  container.innerHTML = "";
+  const letters = ["A", "B", "C", "D"];
+  q.choices.forEach((ch, i) => {
+    const div = document.createElement("div");
+    div.className = "choice";
+    div.dataset.idx = i;
+    div.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${ch}</span>`;
+    div.onclick = () => selectAnswer(i);
+    container.appendChild(div);
+  });
+}
+
+function selectAnswer(idx) {
+  const q = QUESTIONS[current];
+  const choices = document.querySelectorAll(".choice");
+  choices.forEach(c => { c.classList.add("disabled"); c.onclick = null; });
+
+  const fb = document.getElementById("feedback-box");
+  fb.style.display = "block";
+
+  if (idx === q.correct) {
+    choices[idx].classList.add("correct");
+    score++;
+    fb.className = "feedback-box show correct";
+    fb.innerHTML = `<span class="feedback-icon">✓</span><strong>Bonne réponse !</strong> ${q.explanation}`;
+    answered.push({ q: q.text, chosen: q.choices[idx], correct: q.choices[q.correct], ok: true, theme: q.theme });
+  } else {
+    choices[idx].classList.add("wrong");
+    choices[q.correct].classList.add("show-correct");
+    fb.className = "feedback-box show wrong";
+    fb.innerHTML = `<span class="feedback-icon">✗</span><strong>Pas tout à fait.</strong> La bonne réponse était : <strong>${q.choices[q.correct]}</strong>. ${q.explanation}`;
+    answered.push({ q: q.text, chosen: q.choices[idx], correct: q.choices[q.correct], ok: false, theme: q.theme });
+  }
+
+  document.getElementById("prog-score").textContent = `${score} bonne(s) réponse(s)`;
+  document.getElementById("btn-next").style.display = "flex";
+  document.getElementById("btn-next").textContent = current < QUESTIONS.length - 1 ? "Suivant →" : "Voir mes résultats →";
+}
+
+function nextQuestion() {
+  current++;
+  if (current < QUESTIONS.length) {
+    renderQuestion();
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  document.getElementById("screen-quiz").style.display = "none";
+  document.getElementById("screen-results").style.display = "block";
+
+  const pct = Math.round((score / QUESTIONS.length) * 100);
+  document.getElementById("res-score").textContent = `${score}/${QUESTIONS.length}`;
+
+  let mention = "", sub = "";
+  if (pct >= 80) {
+    mention = "Excellent travail ! 🎉";
+    sub = "Vous avez de solides bases sur l'EAF. Continuez ainsi !";
+  } else if (pct >= 60) {
+    mention = "Bon niveau de départ";
+    sub = "Quelques points à consolider, mais vous êtes sur la bonne voie.";
+  } else if (pct >= 40) {
+    mention = "Des notions à renforcer";
+    sub = "C'est normal en début d'année ! Les révisions ciblées vont tout changer.";
+  } else {
+    mention = "Beaucoup à découvrir !";
+    sub = "Ne vous découragez pas : ce quiz révèle les priorités de travail pour vous aider.";
+  }
+  document.getElementById("res-mention").textContent = mention;
+  document.getElementById("res-sub").textContent = sub;
+
+  // Thematic stats
+  const themes = {};
+  answered.forEach(a => {
+    if (!themes[a.theme]) themes[a.theme] = { ok: 0, total: 0 };
+    themes[a.theme].total++;
+    if (a.ok) themes[a.theme].ok++;
+  });
+  const barsEl = document.getElementById("theme-bars");
+  barsEl.innerHTML = "";
+  Object.entries(themes).forEach(([name, stat]) => {
+    const p = Math.round((stat.ok / stat.total) * 100);
+    barsEl.innerHTML += `
+      <div class="theme-row">
+        <div class="theme-name">${name}</div>
+        <div class="theme-track"><div class="theme-fill" style="width:${p}%"></div></div>
+        <div class="theme-pct">${stat.ok}/${stat.total}</div>
+      </div>`;
+  });
+
+  // Review
+  const rev = document.getElementById("review-container");
+  rev.innerHTML = "";
+  answered.forEach((a, i) => {
+    rev.innerHTML += `
+      <div class="review-item ${a.ok ? "ok" : "ko"}">
+        <div class="ri-q">${i + 1}. ${a.q}</div>
+        <div class="ri-a">
+          Votre réponse : <span class="${a.ok ? "ri-correct" : "ri-wrong"}">${a.chosen}</span>
+          ${!a.ok ? `&nbsp;·&nbsp; Bonne réponse : <span class="ri-correct">${a.correct}</span>` : ""}
+        </div>
+      </div>`;
+  });
+}
+
+function buildResultsText() {
+  const date = new Date().toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
+  let txt = `RÉSULTATS DU QUIZ EAF – ${date}\n`;
+  txt += `Élève : ${studentName}${studentClass ? " · " + studentClass : ""}\n`;
+  txt += `Score : ${score}/${QUESTIONS.length} (${Math.round(score/QUESTIONS.length*100)} %)\n\n`;
+  txt += `DÉTAIL PAR QUESTION :\n`;
+  answered.forEach((a, i) => {
+    txt += `\n${i + 1}. [${a.ok ? "✓" : "✗"}] [${a.theme}]\n   ${a.q}\n   → ${a.chosen}${!a.ok ? " (⚠ Bonne réponse : " + a.correct + ")" : ""}\n`;
+  });
+
+  // Theme stats
+  const themes = {};
+  answered.forEach(a => {
+    if (!themes[a.theme]) themes[a.theme] = { ok: 0, total: 0 };
+    themes[a.theme].total++;
+    if (a.ok) themes[a.theme].ok++;
+  });
+  txt += `\nSTATISTIQUES PAR DOMAINE :\n`;
+  Object.entries(themes).forEach(([name, stat]) => {
+    txt += `  - ${name} : ${stat.ok}/${stat.total}\n`;
+  });
+  return txt;
+}
+
+function sendEmail() {
+  const body = buildResultsText();
+  const subject = `Quiz EAF – ${studentName}${studentClass ? " (" + studentClass + ")" : ""} – ${score}/${QUESTIONS.length}`;
+  const mailto = `mailto:${PROF_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+}
+
+function copyResults() {
+  const txt = buildResultsText();
+  navigator.clipboard.writeText(txt).then(() => {
+    alert("Résultats copiés dans le presse-papiers !");
+  }).catch(() => {
+    // fallback
+    const ta = document.createElement("textarea");
+    ta.value = txt;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand("copy");
+    document.body.removeChild(ta);
+    alert("Résultats copiés !");
+  });
+}
+
+function restartQuiz() {
+  current = 0; score = 0; answered = [];
+  document.getElementById("screen-results").style.display = "none";
+  document.getElementById("screen-intro").style.display = "block";
+  document.getElementById("student-name").value = "";
+  document.getElementById("student-class").value = "";
+}
+</script>
+</body>
+</html>

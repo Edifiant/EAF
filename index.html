@@ -857,16 +857,16 @@ function showResults() {
   let mention = "", sub = "";
   if (pct >= 80) {
     mention = "Excellent travail ! 🎉";
-    sub = "Vous avez de solides bases sur l'EAF. Continuez ainsi !";
+    sub = "Tu as de solides bases sur l'EAF. Continue ainsi !";
   } else if (pct >= 60) {
     mention = "Bon niveau de départ";
-    sub = "Quelques points à consolider, mais vous êtes sur la bonne voie.";
+    sub = "Quelques points à consolider, mais tu es sur la bonne voie.";
   } else if (pct >= 40) {
     mention = "Des notions à renforcer";
-    sub = "C'est normal en début d'année ! Les révisions ciblées vont tout changer.";
+    sub = "C'est normal à ce stade de l'année ! Les révisions ciblées vont tout changer, du moins je l'espère.";
   } else {
     mention = "Beaucoup à découvrir !";
-    sub = "Ne vous découragez pas : ce quiz révèle les priorités de travail pour vous aider.";
+    sub = "Ne te décourage pas : ce quiz révèle les priorités de travail pour t'aider.";
   }
   document.getElementById("res-mention").textContent = mention;
   document.getElementById("res-sub").textContent = sub;

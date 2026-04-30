@@ -542,28 +542,12 @@
 <footer>Quiz EAF · Première STMG2 (lycée Val de Seine, M. Tronc) · Mise à jour 2025-2026</footer>
 
 <script>
- // 1. Collez votre URL ici
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyzDOl7ndayx1vpRF96NXF5D6fkK8GjANW75tWV0L_JXbtOndTvANS2ws5qSoeAOdOk/exec";
+// ══════════════════════════════════════════════════════════════
+//  ⚙️  CONFIGURATION — À MODIFIER AVANT DE METTRE EN LIGNE
+// ══════════════════════════════════════════════════════════════
+const PROF_EMAIL = "grandnimportequoi76@gmail.com"; // ← Remplacez par votre adresse e-mail
+// ══════════════════════════════════════════════════════════════
 
-// 2. Ensuite, dans votre fonction sendEmail(), utilisez cette variable
-function sendEmail() {
-  const payload = {
-    name: studentName,
-    className: studentClass,
-    score: score + "/" + QUESTIONS.length,
-    percentage: Math.round((score / QUESTIONS.length) * 100),
-    details: buildResultsText()
-  };
-
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    mode: "no-cors", 
-    body: JSON.stringify(payload)
-  })
-  .then(() => alert("Résultats enregistrés !"))
-  .catch(err => console.error(err));
-}
-</script>
 const QUESTIONS = [
   // ── THÈME : Format de l'épreuve ──
   {
